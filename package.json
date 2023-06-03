@@ -1,7 +1,7 @@
 {
-  "name": "nextra-docs-template",
+  "name": "next-13-guide",
   "version": "0.0.1",
-  "description": "Nextra docs template",
+  "description": "Next.js 13 Guide",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/shuding/nextra-docs-template.git"
+    "url": "git+https://github.com/AlandSleman/next-guide.git"
   },
-  "author": "Shu Ding <g@shud.in>",
+  "author": "Aland Sleman",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/shuding/nextra-docs-template/issues"
+    "url": "https://github.com/AlandSleman/next-guide/issues"
   },
-  "homepage": "https://github.com/shuding/nextra-docs-template#readme",
+  "homepage": "https://github.com/AlandSleman/next-guide",
   "dependencies": {
     "next": "^13.0.6",
     "nextra": "latest",
