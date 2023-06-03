@@ -1,0 +1,25 @@
+
+# App Directory
+
+Let’s talk about the hierarchical structure, In `pages` Directory, everything is simple any file you create will be a page containing all the page code, Here is an example of a website with `pages` Directory.
+
+![hierarchical](/frontend/hierarchical.png)
+
+And here is the same structure in the `app` Directory:
+
+![hierarchical-2](/frontend/hierarchical-2.png)
+
+The main change is you no longer can’t just have a page.tsx representing a page you must create a folder/dir for it, Also Next.js will do a lot of work in the background caching a lot of data here are just just a few optimizations Next.js will do in the background:
+
+- [Navigation caching](https://nextjs.org/docs/app/building-your-application/routing#server-centric-routing-with-client-side-navigation), [More caching](https://nextjs.org/docs/app/building-your-application/routing/linking-and-navigating#client-side-caching-of-rendered-server-components)
+- [Caching fetch requests](https://nextjs.org/docs/getting-started/react-essentials#sharing-fetch-requests-between-server-components)
+- [Per-request Caching](https://nextjs.org/docs/app/building-your-application/data-fetching/caching#per-request-caching), More on this in the next section (Data fetching)
+
+So basically these levels of optimizations are just not possible with the legacy `page` router.
+
+You can also declare components and styles for each page in its folder rather than the traditional components folder, although many devs will not like this approach because it makes sharing code much harder, I do agree but sometimes having some components that are only required to a specific page in the same folder makes the developer experience much better.
+// code snippet for component and styles
+
+#Best Practice: Naming Conventions: having each file named page.js can be frustrating to work with you don’t know which page you exactly editing, you can create another file named the page that you are editing like so:
+
+// code snippet
