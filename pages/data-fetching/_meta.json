@@ -1,6 +1,4 @@
 {
-  "root-layout": "Root Layout",
-  "app-dir": "App Directory",
-  "file-conventions": "File Conventions"
-  "server-client-components": "Server and Client components"
+  "project": "Project",
+  "data-fetching": "Data fetching"
 }

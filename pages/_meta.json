@@ -2,6 +2,7 @@
   "index": "Introduction",
   "frontend": "Frontend",
   "data-fetching": "Data fetching",
+  "backend": "Backend",
   "about": {
     "title": "About",
     "type": "page"

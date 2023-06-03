@@ -1,0 +1,157 @@
+#Project
+First let’s replace the content inside default page inside src/app/page.tsx
+
+/code
+
+also lets make a simple header navigation inside layout.tsx
+
+we have also removed the main tag because I like adding it inside the layout.tsx file
+
+// no. talk about a simple tailwind config
+
+## Adding Dark mode
+
+If you have you browser set on dark mode you’ll notice after we added the changes it’s no longer by default that’s because we removed
+ 
+
+```jsx
+@media (prefers-color-scheme: dark) {
+    /* CSS properties for dark mode */
+}
+```
+
+So to fix it we can install `next-themes` which is many built it utilities so configure dark/light modes
+
+run `npm install next-themes` and in add the import to it inside `layout.tsx`
+
+ 
+
+We will wrap everything inside our body with it and we will provide the neccasary props to change the mode specified by the user browser.
+
+But as you notice we will get an this error when we try to visit our project:
+ 
+
+![Untitled](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/bf15a3b0-88f9-49f6-84aa-b2e1d02dc77b/Untitled.png)
+
+This is because The component we added `ThemeProvider` is a Client component and our layout.tsx is a Server component, so we need to make a new component and add the `"use client"`directive to be able to use it inside our server component
+
+Lets create a new folder `components` at the root of our project and add a create a new file inside it `theme-provider.tsx`:
+
+```jsx
+"use client"
+
+import * as React from "react"
+import { ThemeProvider as NextThemesProvider } from "next-themes"
+import { ThemeProviderProps } from "next-themes/dist/types"
+
+export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
+  return <NextThemesProvider {...props}>{children}</NextThemesProvider>
+}
+```
+
+And import it inside our RootLayout `layout.tsx` 
+
+// code for import
+
+Now we have fixed the dark mode, lets also add a simple theme toggle.
+
+But you’ll notice we are importing from ../.. it’s kinds not nice to everytime specify the path for the import so let’s add the @ import paths inside our tsconfig.json
+
+//code 
+
+now we can import from @ which is the root of our project instead specifying the path everytime.
+
+Now we have configured tailwind simply and we added dark mode let’s 
+
+---
+
+## Static data/page
+
+To create static page with static data we first need some data source, for this demo I chose the tallest mountains and some images to go along with it, create a new file in src/mountainsData.ts
+//code for data
+
+Now to display the data in a static page we can fetch the data, we are fetching the data which is a server action to simulate a real database. Create a new page in app/static/page.tsx
+and put the following code in the which is for the fetch
+
+// code for static with getData() inside of it
+
+### ****Dynamic Routes****
+
+Now we want to be able to have each mountain data to have its own page, so to do that we need dynamic routes, dynamic routes allow you to have multiple pages from dynamic route, and you will get the data via param route
+
+To create a dynamic route we need to wrap our  folder's name in square brackets: `[folderName]`. 
+
+To convert our /static route to dynamic route we just create the folder in our /static named `[id]` and move  our page code so here what it is our folder structure at the end:
+// screenshot for folder structure
+
+### Getting param data
+
+In order to get the current page that the user visits we can get the param via the page  props:
+//code 
+The param is in the slug we defined which was `[id]` now depending on the route that the user is on we can render the related mountain data:
+// code for it:
+
+---
+
+# Static data with revalidation
+
+Lets say we wanted to change the order of the mountains shown, or add extra data what we could do in that case? Well for that we have to revalidate the data.
+And how we do that is simple, we just add a route segment `revalidation` which tells Next.js to revalidate the contents of this page every X seconds
+//code
+
+Now lets add a new page `app/revalidate/[id]/page.tsx`
+
+Lets modify the getData function to make it reorder the data if we want to.
+Make a new file in `src/utils/index.ts` which we will put the getData() function in:
+in order to reorder the array we need a function which when called with an array will shuffle the array values, so this is our final code for getData:
+ 
+
+```jsx
+export async function getData(random?: boolean) {
+  if (random) {
+    console.log("rrrrrr", random)
+    // await delay(2000);
+    let arr = shuffle(mountainsData)
+    console.log("dataaaaa", arr)
+    return arr;
+  } else {
+    console.log("pronbbbb", random)
+    // await delay(2000);
+    return mountainsData;
+  }
+}
+
+function shuffle<T>(array: T[]): T[] {
+  const shuffledArray = [...array];
+  for (let i = shuffledArray.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledArray[i], shuffledArray[j]] = [shuffledArray[j], shuffledArray[i]];
+  }
+  return shuffledArray;
+}
+```
+
+Now we import the new function into our static route and we we will just copy the static page content to our new `revalire` route and just add revalidation route segment to it.
+// code
+
+Now every 10 seconds the contents of the page will be updated.
+getData() function is cached.
+
+---
+
+# Dynamic data fetching
+
+Dynamic data fetching means there is no caching involved which can be useful when you work with highly dynamic data but can drain resources if used with no responsibility.
+
+Lets create a new page in `app/dynamic/[id]/page.tsx` and copy the revalidate page code over there.
+
+To make our page dynamic we just change the `dynamic` route segment to `force-dynamic` and remove the `revalidation` route segment because it’s useless now.
+//final code
+
+Now each time a request has been made to the page the getData() function will be called
+
+---
+
+# Multiple Root Layouts
+
+To create multiple root layout

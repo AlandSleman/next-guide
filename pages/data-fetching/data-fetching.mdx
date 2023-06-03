@@ -1,0 +1,254 @@
+## Data Fetching
+
+[Project](https://www.notion.so/Project-2e588cd4ab214ab2a528357c24bf0588?pvs=21)
+
+Lets learn more data fetching by creating a simple project here is what it will look like at the end
+
+//iframe
+
+in this simple project we will learn in detail about:
+
+// learn about
+
+tailwind config
+
+tutorial will learn****[Static Params](https://nextjs.org/docs/app/building-your-application/routing/dynamic-routes#generating-static-params) what are they? dynamic routing
+Static and Dynamic Rendering yes
+Data Fetching**
+
+For those who want to keep on reading you can skip the project and keep on reading i definetly recommend going through the project
+
+---
+
+## Data fetching
+
+With the new Next.js 13 we have 2 ways to fetch data which is the `fetch()` and `Server actions`
+You can fetch data in a server component and a client component with both approaches, let’s see how we can fetch data with the fetch api and server actions on a server component:
+
+### Fetch
+
+To fetch data using the fetch api first you’ll need an api to call and get the data from so lets make a simple api that returns an object with some dummy data:
+
+//code for api
+
+Now to fetch that data inside our component we just basicly need to make a request to the api:
+
+//code for fetch
+
+### Server actions
+
+Fetching data with server actions is way easier, because you don’t need to make an api route.
+Next.js will do that under the hood for you.
+
+With server actions you just create an async function and it will be a server action when you declare it inside a server component or when you use the `"use server"` directive:
+
+//code for server action
+
+As you can see it’s way easier to fetch data with server actions, you don’t need an api route to write you backend logic, you just basicly write any logic like database connections querieing the database inside the function which is a server action
+
+But you have to be more careful when using server actions because it’s very easy to leak sensitive data, we will talk more in depth about it here:
+
+## Caching and Re-validating data
+
+Now let’s see how we can cache data with both fetch and `server actions`
+
+### Fetch
+
+By default, `fetch` will automatically fetch and [cache data](https://nextjs.org/docs/app/building-your-application/data-fetching/caching) indefinitely.
+You have to give a second parameter which is an object to configure the caching of the fetch request.
+//code for options
+
+### **[Revalidating Data](https://nextjs.org/docs/app/building-your-application/data-fetching/fetching#revalidating-data)**
+
+To revalidate [cached data](https://nextjs.org/docs/app/building-your-application/data-fetching/caching) at a timed interval, you can use the `next.revalidate` option in `fetch()` to set the `cache` lifetime of a resource (in seconds).
+
+`fetch('https://...', { next: { revalidate: 10 } });`
+
+### **[Per-request Caching](https://nextjs.org/docs/app/building-your-application/data-fetching/caching#per-request-caching)**
+
+### **`[fetch()](https://nextjs.org/docs/app/building-your-application/data-fetching/caching#fetch)`**
+
+By default, all `fetch()` requests are cached and deduplicated automatically. This means that if you make the same request twice, the second request will reuse the result from the first request.
+
+Requests are **not** cached if:
+
+- Dynamic methods (`next/headers`, `export const POST`, or similar) are used and the fetch is a `POST` request (or uses `Authorization` or `cookie` headers)
+- `fetchCache` is configured to skip cache by default
+- `revalidate: 0` or `cache: 'no-store'` is configured on individual `fetch`
+
+Requests made using `fetch` can specify a `revalidate` option to control the revalidation frequency of the request.
+****[React `cache()`](https://nextjs.org/docs/app/building-your-application/data-fetching/caching#react-cache)**
+https://nextjs.org/docs/app/building-your-application/data-fetching/caching
+
+### Server actions
+
+With server actions Everything it is a little more different and easier, you don’t have to specify 
+caching configuration for each server action that you make.
+Instead you configure the caching behavior per page basis using a route segment 
+
+### ****Route Segment Config****
+
+From [Next.js docs](https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config):
+
+The Route Segment options allows you configure the behavior of a [Page](https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts), [Layout](https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts), or [Route Handler](https://nextjs.org/docs/app/building-your-application/routing/router-handlers) by directly exporting the following variables:
+
+| Option | Type | Default |
+| --- | --- | --- |
+| https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config#dynamic | 'auto' | 'force-dynamic' | 'error' | 'force-static' | 'auto' |
+| https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config#dynamicparams | boolean | true |
+| https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config#revalidate | false | 'force-cache' | 0 | number | false |
+| https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config#fetchcache | 'auto' | 'default-cache' | 'only-cache' | 'force-cache' | 'force-no-store' | 'default-no-store' | 'only-no-store' | 'auto' |
+| https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config#runtime | 'nodejs' | 'edge' | 'nodejs' |
+| https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config#preferredregion | 'auto' | 'global' | 'home' | string | string[] | 'auto' |
+
+The 2 main options that we are focusing on are `dynamic` and `revalidate`
+
+With these 2 options  you can specify how a page should be rendered either `static` (getStaticProps) or `dynamic` (getServerSideProps) or `static with revalidation` ****[Incremental Static Regeneration (ISR)](https://nextjs.org/docs/pages/building-your-application/rendering/incremental-static-regeneration)****
+
+And here is each value for the 2 options mean:
+
+### dynamic
+
+- **`'auto'`** (default): The default option to cache as much as possible without preventing any components from opting into dynamic behavior.
+- **`'force-dynamic'`**: Force dynamic rendering and dynamic data fetching of a layout or page by disabling all caching of `fetch` requests and always revalidating. This option is equivalent to:
+    - `getServerSideProps()` in the `pages` directory.
+    - Setting the option of every `fetch()` request in a layout or page to `{ cache: 'no-store', next: { revalidate: 0 } }`.
+    - Setting the segment config to `export const fetchCache = 'force-no-store'`
+- **`'error'`**: Force static rendering and static data fetching of a layout or page by causing an error if any components use [dynamic functions](https://nextjs.org/docs/app/building-your-application/rendering/static-and-dynamic-rendering#dynamic-functions) or [dynamic fetches](https://nextjs.org/docs/app/building-your-application/rendering/static-and-dynamic-rendering#dynamic-data-fetching). This option is equivalent to:
+    - `getStaticProps()` in the `pages` directory.
+    - Setting the option of every `fetch()` request in a layout or page to `{ cache: 'force-cache' }`.
+    - Setting the segment config to `fetchCache = 'only-cache', dynamicParams = false`.
+    - Note: `dynamic = 'error'` changes the default of `dynamicParams` from `true` to `false`. You can opt back into dynamically rendering pages for dynamic params not generated by `generateStaticParams` by manually setting `dynamicParams = true`.
+- **`'force-static'`**: Force static rendering and static data fetching of a layout or page by forcing `[cookies()](https://nextjs.org/docs/app/api-reference/functions/cookies)`, `[headers()](https://nextjs.org/docs/app/api-reference/functions/headers)` and `[useSearchParams()](https://nextjs.org/docs/app/api-reference/functions/use-search-params)` to return empty values.
+
+### revalidate
+
+- **`false`**: (default) The default heuristic to cache any `fetch` requests that set their `cache` option to `'force-cache'` or are discovered before a [dynamic function](https://nextjs.org/docs/app/building-your-application/rendering/static-and-dynamic-rendering#dynamic-functions) is used. Semantically equivalent to `revalidate: Infinity` which effectively means the resource should be cached indefinitely. It is still possible for individual `fetch` requests to use `cache: 'no-store'` or `revalidate: 0` to avoid being cached and make the route dynamically rendered. Or set `revalidate` to a positive number lower than the route default to increase the revalidation frequency of a route.
+- **`0`**: Ensure a layout or page is always [dynamically rendered](https://nextjs.org/docs/app/building-your-application/rendering/static-and-dynamic-rendering#dynamic-rendering) even if no dynamic functions or dynamic data fetches are discovered. This option changes the default of `fetch` requests that do not set a `cache` option to `'no-store'` but leaves `fetch` requests that opt into `'force-cache'` or use a positive `revalidate` as is.
+- **`number`**: (in seconds) Set the default revalidation frequency of a layout or page to `n` seconds.
+
+I recommend reading into the Next.js docs to learn more about route segments, the other options can be very useful too.
+https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config
+
+And in the simple project that i mentioned earlier i demonstrate how to use server actions and route segments.
+
+//link to proj
+
+---
+
+## **[Static Data Fetching](https://nextjs.org/docs/app/building-your-application/data-fetching/fetching#static-data-fetching)**
+
+By default, `fetch` will automatically fetch and [cache data](https://nextjs.org/docs/app/building-your-application/data-fetching/caching) indefinitely.
+
+### **[Revalidating Data](https://nextjs.org/docs/app/building-your-application/data-fetching/fetching#revalidating-data)**
+
+To revalidate [cached data](https://nextjs.org/docs/app/building-your-application/data-fetching/caching) at a timed interval, you can use the `next.revalidate` option in `fetch()` to set the `cache` lifetime of a resource (in seconds).
+
+`fetch('https://...', { next: { revalidate: 10 } });`
+
+## **[Per-request Caching](https://nextjs.org/docs/app/building-your-application/data-fetching/caching#per-request-caching)**
+
+### **`[fetch()](https://nextjs.org/docs/app/building-your-application/data-fetching/caching#fetch)`**
+
+By default, all `fetch()` requests are cached and deduplicated automatically. This means that if you make the same request twice, the second request will reuse the result from the first request.
+
+Requests are **not** cached if:
+
+- Dynamic methods (`next/headers`, `export const POST`, or similar) are used and the fetch is a `POST` request (or uses `Authorization` or `cookie` headers)
+- `fetchCache` is configured to skip cache by default
+- `revalidate: 0` or `cache: 'no-store'` is configured on individual `fetch`
+
+Requests made using `fetch` can specify a `revalidate` option to control the revalidation frequency of the request.
+****[React `cache()`](https://nextjs.org/docs/app/building-your-application/data-fetching/caching#react-cache)**
+https://nextjs.org/docs/app/building-your-application/data-fetching/caching
+
+Middleware allows you to run code before a request is completed.
+
+---
+
+## (new topic after tutorial)Server components inside client components
+
+You may want to use server components inside client components for this we will need to pass the server components as children to the client components, behind the scenes Next.js will render the server components first and it will declare *“holes”* in the client component and after the client component is rendered Next.js will fill the “holes”. So this is a nice optimization Next.js will do for us behind the scenes. 
+
+### **Good to know**
+
+From the Next.js docs:
+
+- This pattern is **already applied** in [layouts and pages](https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts) with the `children` prop so you don't have to create an additional wrapper component.
+- Passing React components (JSX) to other components is not a new concept and has always been part of the React composition model.
+- This composition strategy works across Server and Client Components because the component that receives the prop has no knowledge of **what** the prop is. It is only responsible for where the thing that it is passed should be placed.
+    - This allows the passed prop to be rendered independently, in this case, on the server, well before the Client Component is rendered on the client.
+    - The very same strategy of "lifting content up" has been used to avoid state changes in a parent component re-rendering an imported nested child component.
+- You're not limited to the `children` prop. You can use any prop to pass JSX.
+
+A great use case for this is React context, when we need to a client data on our client-side application we can use react context for that.
+To demonstrate an example for this use case we will build a search functionality where user searches for something and we want the result of that search in somewhere else in our client compoentns:
+
+//  iframe
+
+//code 
+
+---
+
+## Danger: Running  Server-Only code inside of Client Components (Poisoning)
+
+Later in the backend section wei’ll touch on this topic again but I feel like it’s very important topic so i’ll mention it here too. With these new features it’s very easy to accidentally leak sensitive data like API keys and other stuff here is an example of how easy it is:
+//show danger code  and screen shot of dev tools
+
+In this example we fetch the some data from another server with our private API key but if you open the dev tools and take a look at the elements you can see react is exposing our API key in the elements this is because we declared a variable outside of our fetch function.
+
+### The "server only" package
+
+To guarantee that we won’t accendentaly expose any API key or running some code that’s not meant to run on the client we can ```import 'server-only'```
+
+// example code
+
+This will throw a build time error if we accendally use the server code on our client component
+
+// screenshot of this
+
+---
+
+## **Advanced Routing Patterns**
+
+There are a more advanced features in the new App router these include:
+
+The App Router also provides a set conventions to help you implement more advanced routing patterns. These include:
+
+- [Route Groups](https://nextjs.org/docs/app/building-your-application/routing/parallel-routes): The hierarchy of the `app` folder maps directly to URL paths. However, it’s possible to break out of this pattern by creating a **route group**. Route groups can be used to:
+    - Organize routes without affecting the URL structure.
+    - Opting-in specific route segments into a [layout](https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts).
+    - Create multiple [root layouts](https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts#root-layout-required) by splitting your application.
+- [Parallel Routes](https://nextjs.org/docs/app/building-your-application/routing/parallel-routes): Allow you to simultaneously show two or more pages in the same view that can be navigated independently. You can use them for split views that have their own sub-navigation. E.g. Dashboards.
+- [Intercepting Routes](https://nextjs.org/docs/app/building-your-application/routing/intercepting-routes): Allow you to intercept a route and show it in the context of another route. You can use these when keeping the context for the current page is important. E.g. Seeing all tasks while editing one task or expanding a photo in a feed.
+
+For now we’ll only talk about Route groups which lets us to create multiple [Root Layouts](https://www.notion.so/9f20040a4983423db90acbab317ffbf6?pvs=21).
+
+Depending on the attraction that this guide will get, In the future ill touch on Parallel routes and Intercepting routes, It is a really nice feature and improves the user experience a lot but introduces a lot of overhead for the developer.
+So hit me up guys if you’d like to go deeper on those features.
+
+## M****ultiple Root layouts****
+
+This is a useful feature for example when we have a user dashboard which we want to have another different navigation rather than the homepage navigation:
+
+//iframe
+
+First lets start by removing our top-level layout.tsx file.
+
+///remove
+
+And creating 2 route groups which will be (home) and (dashboard)
+
+///create both and code
+
+So let’s summarize and simplify what we have done here.
+
+First, we removed the main Root layout of our application, think of it like the (_*app) file in the pages directory.*
+And then we created 2 new Root layouts with (Route groups) we created the route groups with the (). Next.js will recognize this and if you have the dev server running while you do it Next.js will automatically create a Root layout (layout.tsx) for us.
+Now any new pages we declare on either Route group will share the intended layout that we want.
+
+### **Good to know:**
+
+- The naming of route groups has no special significance other than for organization. They do not affect the URL path.
+- Routes inside route groups **should not** resolve to the same URL path. For example, since route groups don't affect URL structure, `(marketing)/about/page.js` and `(shop)/about/page.js` would both resolve to `/about` and cause an error.
+- Navigating **across multiple root layouts** will cause a **full page load** (as opposed to a client-side navigation). For example, navigating from `/cart` that uses `app/(shop)/layout.js` to `/blog` that uses `app/(marketing)/layout.js` will cause a full page load. This **only** applies to multiple root layouts.
