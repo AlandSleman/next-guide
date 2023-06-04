@@ -1,6 +1,7 @@
 {
   "root-layout": "Root Layout",
   "app-dir": "App Directory",
+  "server-client-components": "Server and Client components",
   "file-conventions": "File Conventions",
-  "server-client-components": "Server and Client components"
+  "next-functions": "Next functions"
 }

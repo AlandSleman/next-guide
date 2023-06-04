@@ -1,4 +1,4 @@
 {
-  "project": "Project",
-  "data-fetching": "Data fetching"
+  "fetching": "Fetching",
+  "caching-and-revalite": "Caching and Revalidating"
 }

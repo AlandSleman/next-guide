@@ -3,6 +3,7 @@
   "frontend": "Frontend",
   "data-fetching": "Data fetching",
   "backend": "Backend",
+  "project": "Project",
   "contact": {
     "title": "Contact ↗",
     "type": "page",
