@@ -1,7 +1,8 @@
 {
-  "root-layout": "Root Layout",
   "app-dir": "App Directory",
+  "root-layout": "Root Layout",
   "server-client-components": "Server and Client components",
   "file-conventions": "File Conventions",
-  "next-functions": "Next functions"
+  "next-functions": "Next functions",
+  "advanced-routing": "Advanced Routing Patterns"
 }

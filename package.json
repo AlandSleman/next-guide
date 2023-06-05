@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "description": "Next.js 13 Guide",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 7277",
     "build": "next build",
-    "start": "next start"
+    "start": "next start -p 7277"
   },
   "repository": {
     "type": "git",
@@ -22,7 +22,9 @@
     "nextra": "latest",
     "nextra-theme-docs": "latest",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-accessible-treeview": "^2.5.6",
+    "react-dom": "^18.2.0",
+    "react-icons": "^4.9.0"
   },
   "devDependencies": {
     "@types/node": "18.11.10",
