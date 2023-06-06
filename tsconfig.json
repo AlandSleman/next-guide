@@ -18,8 +18,11 @@
     "resolveJsonModule": true,
     "jsx": "preserve",
     "paths": {
-      "@/*": ["./*"]
-    }
+      "@/*": [
+        "./*"
+      ]
+    },
+    "isolatedModules": true
   },
   "include": [
     "next-env.d.ts",
