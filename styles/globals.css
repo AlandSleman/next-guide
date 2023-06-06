@@ -25,6 +25,7 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
 .ide {
   background: #242322;
   font-family: monospace;

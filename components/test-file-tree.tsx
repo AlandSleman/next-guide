@@ -1,8 +1,7 @@
 import React from "react";
+import TreeView, { flattenTree } from "react-accessible-treeview";
 import { DiCss3, DiJavascript, DiNpm } from "react-icons/di";
 import { FaList, FaRegFolder, FaRegFolderOpen } from "react-icons/fa";
-import TreeView, { flattenTree } from "react-accessible-treeview";
-import styles from "./tree-styles.module.css";
 
 const folder = {
   name: "",
@@ -37,10 +36,9 @@ const data = flattenTree(folder);
 export default function Tree() {
   return (
     <div>
-      <div className={styles.ide}>
+      <div className="ide">
         <TreeView
           data={data}
-          className={styles.ide+" a "+styles.tree}
           aria-label="directory tree"
           togglableSelect
           clickAction="EXCLUSIVE_SELECT"
