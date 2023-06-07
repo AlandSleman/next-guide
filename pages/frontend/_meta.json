@@ -3,6 +3,7 @@
   "root-layout": "Root Layout",
   "server-client-components": "Server and Client components",
   "file-conventions": "File Conventions",
+  "dynamic-routes": "Dynamic Routes",
   "next-functions": "Next functions",
   "advanced-routing": "Advanced Routing Patterns"
 }
