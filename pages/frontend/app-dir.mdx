@@ -1,29 +1,70 @@
+import PagesFileTree from "@/components/file-trees/frontend/pages.tsx"
+import AppFileTree from "@/components/file-trees/frontend/app.tsx"
+import AppComponents from "@/components/file-trees/frontend/app-components.tsx"
+import AppNaming from "@/components/file-trees/frontend/app-naming.tsx"
 
-import PagesFileTree from "@/components/file-trees/pages-file-tree.tsx"
+## App Directory
 
-# App Directory
+Let's begin by discussing the primary change in Next 13: The `app` Directory.
 
-Let’s talk about the hierarchical structure, In `pages` Directory, everything is simple any file you create will be a page containing all the page code, Here is an example of a website with `pages` Directory.
+In the `pages` directory, simplicity is key. Any file you create within this directory automatically becomes a page, encompassing all the necessary page code. Here's an example showcasing a website utilizing the `pages` directory.
 
 <PagesFileTree/>
 
-![hierarchical](/frontend/hierarchical.png)
+And here is the equivalent structure in the **`app`** directory:
 
-And here is the same structure in the `app` Directory:
+<AppFileTree/>
 
-![hierarchical-2](/frontend/hierarchical-2.png)
-
-The main change is you no longer can’t just have a page.tsx representing a page you must create a folder/dir for it, Also Next.js will do a lot of work in the background caching a lot of data here are just just a few optimizations Next.js will do in the background:
+The primary change is that you can no longer have a single **`page.tsx`** file representing a page. Instead, you must create a folder for each page. 
+And the code for each page resides within the corresponding folder's **`page.tsx`** file.
+Additionally, Next.js performs various caching optimizations throughout the application. Here are just a few examples of the optimizations that Next.js handles behind the scenes:
 
 - [Navigation caching](https://nextjs.org/docs/app/building-your-application/routing#server-centric-routing-with-client-side-navigation), [More caching](https://nextjs.org/docs/app/building-your-application/routing/linking-and-navigating#client-side-caching-of-rendered-server-components)
 - [Caching fetch requests](https://nextjs.org/docs/getting-started/react-essentials#sharing-fetch-requests-between-server-components)
 - [Per-request Caching](https://nextjs.org/docs/app/building-your-application/data-fetching/caching#per-request-caching), More on this in the next section (Data fetching)
 
-So basically these levels of optimizations are just not possible with the legacy `page` router.
+So these levels of optimizations are just not easily achievable with the traditional **`page`** router.
 
-You can also declare components and styles for each page in its folder rather than the traditional components folder, although many devs will not like this approach because it makes sharing code much harder, I do agree but sometimes having some components that are only required to a specific page in the same folder makes the developer experience much better.
-// code snippet for component and styles
+## Page-Scoped Components
 
-#Best Practice: Naming Conventions: having each file named page.js can be frustrating to work with you don’t know which page you exactly editing, you can create another file named the page that you are editing like so:
+In addition, you have the flexibility to declare components and styles specific to each page within its respective folder, rather than the conventional `components` folder. It's worth noting that while this approach may make code sharing more challenging, there are cases where organizing components that are exclusively used by a particular page within the same folder can be more logical and intuitive.
 
-// code snippet
+<AppComponents/>
+
+## Naming Conventions
+
+Working with multiple files named **`page.tsx`** can be frustrating as it becomes difficult to determine which specific page you are editing. To address this, a recommended approach is to create a separate file named after the page you are working on. For example:
+
+<AppNaming/>
+
+## Terminology
+
+Finally let’s familiarize ourselves with the terminology used in the official Next.js documentation. It's important to understand these terms as they will be frequently referenced throughout the documentation. Let's take a quick look at each term:
+
+### Component Tree
+
+The component tree is a concept used to represent a hierarchical structure. It helps visualize the relationship between parent and child components, similar to a folder structure. Here are the key terms related to the component tree:
+
+![ComponentTree](/frontend/component-tree.png)
+
+- **Tree:** A convention for visualizing a hierarchical structure. For example, a component tree with parent and children components, a folder structure, etc.
+- **Subtree:** Part of a tree, starting at a new root (first) and ending at the leaves (last).
+- **Root**: The first node in a tree or subtree, such as a root layout.
+- **Leaf:** Nodes in a subtree that have no children, such as the last segment in a URL path.
+
+### URL Anatomy
+
+Understanding the anatomy of a URL is crucial when working with Next.js. Here are the relevant terms:
+
+![URLAnatomy](/frontend/url-anatomy.png)
+
+- **URL Segment:** Part of the URL path delimited by slashes.
+- **URL Path:** Part of the URL that comes after the domain (composed of segments).
+
+By grasping these terminologies related to the component tree and URL anatomy, you'll have a solid foundation for understanding and navigating the Next.js documentation effectively.
+
+### Route Segments
+
+In Next.js, each folder in a route represents a route segment. These route segments are then mapped to their corresponding segments in a URL path. It defines the structure of the routing system.
+
+![RouteSegments](/frontend/route-segments.png)
