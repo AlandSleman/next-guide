@@ -1,26 +1,149 @@
-## Loading
+## Next functions
 
-You can create a special file named loading.js for each page this will render while the page data is being fetched by in the background by Next.js.
-From the Next.js docs:
+Next.js provides built-in functions designed to optimize and enhance your application. Here are some noteworthy highlights, for a comprehensive list, refer to the [Official Next.js docs](https://nextjs.org/docs/app/api-reference/functions).
 
-> “you can show an [instant loading state](https://nextjs.org/docs/app/building-your-application/routing/loading-ui-and-streaming#instant-loading-states) from the server while the content of a route segment loads”.
+## fetch()
+
+Next.js extends the native [Web `fetch()` API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) to allow each request on the server to set its own persistent caching semantics.
+
+```tsx
+export default async function Page() {
+  // This request should be cached until manually invalidated.
+  // Similar to `getStaticProps`.
+  // `force-cache` is the default and can be omitted.
+  const staticData = await fetch(`https://...`, { cache: 'force-cache' });
+ 
+  // This request should be refetched on every request.
+  // Similar to `getServerSideProps`.
+  const dynamicData = await fetch(`https://...`, { cache: 'no-store' });
+ 
+  // This request should be cached with a lifetime of 10 seconds.
+  // Similar to `getStaticProps` with the `revalidate` option.
+  const revalidatedData = await fetch(`https://...`, {
+    next: { revalidate: 10 },
+  });
+ 
+  return <div>...</div>;
+}
+```
+
+### fetch(url, options)
+
+Since Next.js extends the [Web `fetch()` API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API), you can use any of the [native options available](https://developer.mozilla.org/en-US/docs/Web/API/fetch#parameters).
+
+Further, Next.js polyfills `fetch` on both the client and the server, so you can use fetch in both [Server and Client Components](https://nextjs.org/docs/getting-started/react-essentials).
+
+### options.cache
+
+Configure how the request should interact with Next.js HTTP cache.
+
+`fetch(`https://...`, { cache: 'force-cache' | 'no-store' });`
+
+- **`force-cache`** (default) - Next.js looks for a matching request in its HTTP cache.
+    - If there is a match and it is fresh, it will be returned from the cache.
+    - If there is no match or a stale match, Next.js will fetch the resource from the remote server and update the cache with the downloaded resource.
+- **`no-store`** - Next.js fetches the resource from the remote server on every request without looking in the cache, and it will not update the cache with the downloaded resource.
+
+> Good to know:
 > 
+> - If you don't provide a `cache` option, Next.js will default to `force-cache`, unless a [dynamic function](https://nextjs.org/docs/app/building-your-application/rendering/static-and-dynamic-rendering#dynamic-functions) such as `cookies()` is used, in which case it will default to `no-store`.
+> - The `no-cache` option behaves the same way as `no-store` in Next.js.
 
-So now after we added the loading.js file the user immediately gets feedback from our website when navigation while next.js is fetching the content related to that specific page.
+### options.next.revalidate
 
-// code snippet
+Configure the re-validation of the cached response, you can use the **`next.revalidate`** option in the fetch call.
 
-## Not found
+`fetch(`https://...`, { next: { revalidate: false | 0 | number } });`
 
-not-found.js 
+Set the cache lifetime of a resource (in seconds).
 
-//code for both
+- **`false`** - Cache the resource indefinitely. Semantically equivalent to `revalidate: Infinity`. The [HTTP cache](https://nextjs.org/docs/app/building-your-application/data-fetching#caching-data) may evict older resources over time.
+- **`0`** - Prevent the resource from being cached.
+- **`number`** - (in seconds) Specify the resource should have a cache lifetime of at most `n` seconds.
 
-## Error
+## redirect()
 
-error
+The `redirect` function allows you to redirect the user to another URL.
 
-There are a few more file conventions that we can use with the new `app` Directory.
-error.js
+```tsx
+import { redirect } from 'next/navigation';
+ 
+async function fetchTeam(id) {
+  const res = await fetch('https://...');
+  if (!res.ok) return undefined;
+  return res.json();
+}
+ 
+export default async function Profile({ params }) {
+  const team = await fetchTeam(params.id);
+  if (!team) {
+    redirect('/login');
+  }
+ 
+  // ...
+}
+```
 
-for full list visit next docs
+## useRouter()
+
+The `useRouter` hook allows you to programmatically change routes inside [Client Components](https://nextjs.org/docs/getting-started/react-essentials).
+
+```tsx
+'use client';
+ 
+import { useRouter } from 'next/navigation';
+ 
+export default function Page() {
+  const router = useRouter();
+ 
+  return (
+    <button type="button" onClick={() => router.push('/dashboard')}>
+      Dashboard
+    </button>
+  );
+}
+```
+
+## Metadata Object and generateMetadata()
+
+```tsx
+import { Metadata } from 'next';
+ 
+// either Static metadata
+export const metadata: Metadata = {
+  title: '...',
+};
+ 
+// or Dynamic metadata
+export async function generateMetadata({ params }) {
+  return {
+    title: '...',
+  };
+}
+```
+
+Explore [Next.js documentation](https://nextjs.org/docs/app/api-reference/functions/generate-metadata) for more details. There is a lot of cool stuff you can do with the metadata object.
+
+## notFound()
+
+The `notFound` function allows you to render the `[not-found file](https://nextjs.org/docs/app/api-reference/file-conventions/not-found)` within a route segment as well as inject a `<meta name="robots" content="noindex" />` tag.
+
+```tsx
+import { notFound } from 'next/navigation';
+ 
+async function fetchUsers(id) {
+  const res = await fetch('https://...');
+  if (!res.ok) return undefined;
+  return res.json();
+}
+ 
+export default async function Profile({ params }) {
+  const user = await fetchUser(params.id);
+ 
+  if (!user) {
+    notFound();
+  }
+ 
+  // ...
+}
+```

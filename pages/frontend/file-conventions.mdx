@@ -1,26 +1,154 @@
+## File conventions
+
+Next.js provides a set of special files to create UI with specific behavior in nested routes.
+
+## Layout
+
+A **layout** is UI that is shared between routes.
+
+```tsx
+export default function DashboardLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return <section>{children}</section>;
+}
+```
+
+A **root layout** is the top-most layout in the root `app` directory. It is used to define the `<html>` and `<body>` tags and other globally shared UI.
+
+```tsx
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
 ## Loading
 
-You can create a special file named loading.js for each page this will render while the page data is being fetched by in the background by Next.js.
-From the Next.js docs:
+A **loading** file can create instant loading states built on [Suspense](https://nextjs.org/docs/app/building-your-application/routing/loading-ui-and-streaming).
+You can create a special file named `loading.tsx`for each page this will render while the page data is being fetched by in the background by Next.js.
 
 > “you can show an [instant loading state](https://nextjs.org/docs/app/building-your-application/routing/loading-ui-and-streaming#instant-loading-states) from the server while the content of a route segment loads”.
 > 
 
-So now after we added the loading.js file the user immediately gets feedback from our website when navigation while next.js is fetching the content related to that specific page.
-
-// code snippet
+```jsx
+export default function Loading() {
+  // Or a custom loading skeleton component
+  return 'Loading...';
+}
+```
 
 ## Not found
 
-not-found.js 
+The **not-found** file is used to render UI when the `[notFound](https://nextjs.org/docs/app/api-reference/functions/not-found)` function is thrown within a route segment. Along with serving a custom UI, Next.js will also return a `404` HTTP status code.
 
-//code for both
+```tsx
+import Link from 'next/link';
+ 
+export default function NotFound() {
+  return (
+    <div>
+      <h2>Not Found</h2>
+      <p>Could not find requested resource</p>
+      <p>
+        View <Link href="/blog">all posts</Link>
+      </p>
+    </div>
+  );
+}
+```
+
+> Note: In addition to catching expected notFound() errors, the root app/not-found.js file also handles any unmatched URLs for your whole application. This means users that visit a URL that is not handled by your app will be shown the UI exported by the app/not-found.js file.
+> 
 
 ## Error
 
-error
+An **error** file defines an error UI boundary for a route segment.
 
-There are a few more file conventions that we can use with the new `app` Directory.
-error.js
+```tsx
+'use client'; // Error components must be Client Components
+ 
+import { useEffect } from 'react';
+ 
+export default function Error({
+  error,
+  reset,
+}: {
+  error: Error;
+  reset: () => void;
+}) {
+  useEffect(() => {
+    // Log the error to an error reporting service
+    console.error(error);
+  }, [error]);
+ 
+  return (
+    <div>
+      <h2>Something went wrong!</h2>
+      <button
+        onClick={
+          // Attempt to recover by trying to re-render the segment
+          () => reset()
+        }
+      >
+        Try again
+      </button>
+    </div>
+  );
+}
+```
 
-for full list visit next docs
+### Props
+
+### error
+
+An instance of an `[Error](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error)` object. This error can happen on the server or the client.
+
+### reset
+
+A function to reset the error boundary, which does not return a response.
+
+> Good to know:
+> 
+> - `error.js` boundaries must be **[Client Components](https://nextjs.org/docs/getting-started/react-essentials)**.
+> - An `error.js` boundary will **not** handle errors thrown in a `layout.js` component in the **same** segment because the error boundary is nested **inside** that layouts component.
+>     - To handle errors for a specific layout, place an `error.js` file in the layouts parent segment.
+>     - To handle errors within the root layout or template, use a variation of `error.js` called `app/global-error.js`.
+
+### global-error
+
+To specifically handle errors in root `layout.js`, use a variation of `error.js` called `app/global-error.js` located in the root `app` directory.
+
+```tsx
+'use client';
+ 
+export default function GlobalError({
+  error,
+  reset,
+}: {
+  error: Error;
+  reset: () => void;
+}) {
+  return (
+    <html>
+      <body>
+        <h2>Something went wrong!</h2>
+        <button onClick={() => reset()}>Try again</button>
+      </body>
+    </html>
+  );
+}
+```
+
+> Good to know:
+> 
+> - `global-error.js` replaces the root `layout.js` when active and so **must** define its own `<html>` and `<body>` tags.

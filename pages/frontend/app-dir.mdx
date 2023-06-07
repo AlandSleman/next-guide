@@ -3,7 +3,9 @@ import AppFileTree from "@/components/file-trees/frontend/app.tsx"
 import AppComponents from "@/components/file-trees/frontend/app-components.tsx"
 import AppNaming from "@/components/file-trees/frontend/app-naming.tsx"
 
-## App Directory
+import { Tab, Tabs } from 'nextra-theme-docs'
+
+# App Directory
 
 Let's begin by discussing the primary change in Next 13: The `app` Directory.
 
@@ -37,6 +39,39 @@ Working with multiple files named **`page.tsx`** can be frustrating as it become
 
 <AppNaming/>
 
+<Tabs items={['/app/about/page.tsx', '/app/about/about-page.tsx']}>
+
+<Tab>
+
+```tsx
+import { AboutPage } from './about-page'
+
+export default function Page() {
+  return (
+    <AboutPage />
+  )
+}
+```
+
+</Tab>
+
+<Tab>
+
+```tsx
+export function AboutPage() {
+  ...
+  return (
+    <div>
+      about
+    </div>
+  )
+}
+```
+
+</Tab>
+
+</Tabs>
+
 ## Terminology
 
 Finally let’s familiarize ourselves with the terminology used in the official Next.js documentation. It's important to understand these terms as they will be frequently referenced throughout the documentation. Let's take a quick look at each term:
@@ -46,6 +81,7 @@ Finally let’s familiarize ourselves with the terminology used in the official 
 The component tree is a concept used to represent a hierarchical structure. It helps visualize the relationship between parent and child components, similar to a folder structure. Here are the key terms related to the component tree:
 
 ![ComponentTree](/frontend/component-tree.png)
+
 
 - **Tree:** A convention for visualizing a hierarchical structure. For example, a component tree with parent and children components, a folder structure, etc.
 - **Subtree:** Part of a tree, starting at a new root (first) and ending at the leaves (last).
@@ -58,6 +94,7 @@ Understanding the anatomy of a URL is crucial when working with Next.js. Here ar
 
 ![URLAnatomy](/frontend/url-anatomy.png)
 
+
 - **URL Segment:** Part of the URL path delimited by slashes.
 - **URL Path:** Part of the URL that comes after the domain (composed of segments).
 
@@ -68,3 +105,4 @@ By grasping these terminologies related to the component tree and URL anatomy, y
 In Next.js, each folder in a route represents a route segment. These route segments are then mapped to their corresponding segments in a URL path. It defines the structure of the routing system.
 
 ![RouteSegments](/frontend/route-segments.png)
+

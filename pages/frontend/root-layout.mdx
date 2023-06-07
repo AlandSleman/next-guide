@@ -1,12 +1,20 @@
 ## Root Layout
 
-Let's begin by discussing the primary change in Next 13: The Root layout. What is it and what has changed?
+Let's dive into another significant change introduced in Next 13: the Root layout. What exactly is the Root layout, and what specific changes have been implemented in this new version?
 
-In Next 12, we used the **`_app.js`** file to specify the root of our project, which served as the main entry point for our application. However, in Next 13, we no longer have that. Instead, we have the new **`layout.js`**. It essentially serves the same purpose as the **`_app.js`** file.
+A **root layout** is the top-most layout in the root `app` directory. It is used to define the `<html>` and `<body>` tags and other globally shared UI.
 
-Now Let's begin by creating our project. You can start with me by running **`npx create-next-app`** and choosing the default options.
+### Key Highlights
 
-Let’s go through the Root layout which is `layout.tsx`:
+- The `app` directory **must** include a root `app/layout.tsx`.
+- The root layout **must** define `<html>` and `<body>` tags.
+    - You should **not** manually add `<head>` tags such as `<title>` and `<meta>` to root layouts. Instead, you should use the [Metadata API](https://nextjs.org/docs/app/api-reference/functions/generate-metadata) which automatically handles advanced requirements such as streaming and de-duplicating `<head>` elements.
+- You can use [route groups](https://www.notion.so/Advanced-Routing-Patterns-4b46c09ffbc54b529af0966d18098673?pvs=21) to create multiple root layouts.
+    - Navigating **across multiple root layouts** will cause a **full page load** (as opposed to a client-side navigation). For example, navigating from `/cart` that uses `app/(shop)/layout.js` to `/blog` that uses `app/(marketing)/layout.js` will cause a full page load. This **only** applies to multiple root layouts.
+
+## Transition from `_app.tsx` to `layout.tsx`
+
+In Next 12, we used the **`_app.tsx`** file to specify the root of our project, which served as the main entry point for our application. However, in Next 13, we no longer have that. Instead, we have the new **`layout.tsx`**. It serves the same purpose as the **`_app.tsx`** file.
 
 ```jsx
 import './globals.css'
@@ -34,7 +42,7 @@ export default function RootLayout({
 
 ## Root Component
 
-In Next 13, we define the **`RootLayout`** component in `layout.tsx`, which receives **`children`** as props, similar to how it’s done in `_app.js`. This provides us with the ability to structure our HTML document by directly including the **`html`** and **`body`** tags. Such a level of control was not available in Next 12, where the generation of these tags was handled internally.
+In Next 13, we export a default component in `layout.tsx` which will be the root layout, It receives **`children`** as props, similar to how it’s done in `_app.tsx`. This allows us to structure our HTML document by directly including the **`html`** and **`body`** tags. Such a level of control was not available in Next 12, where the generation of these tags was handled internally.
 
 ```jsx
 export default function RootLayout({
@@ -50,18 +58,6 @@ export default function RootLayout({
 }
 ```
 
-With `_app.js` you just have a simplified version:
-
-```jsx
-import '../styles/globals.css';
-
-function MyApp({ Component, pageProps }) {
-  return <Component {...pageProps} />;
-}
-
-export default MyApp;
-```
-
 ## Metadata
 
 There is a new and simplified way to define the metadata of our application. We can now export an object with each field representing a specific metadata attribute. This makes it  easier to manage and update the metadata for our app:
@@ -73,7 +69,7 @@ export const metadata = {
 }
 ```
 
-The `metadata` object and `generateMetadata` function exports are generated on the server and **only supported in Server Components.** You can’t use the Head component in the new App router:
+The `metadata` object and `generateMetadata` function exports are generated on the server and **only supported in Server Components.** You can’t use the Head component in the new `app` router:
 
 ```jsx
 // This doesn't work, the meta tags won't show up.
@@ -99,7 +95,7 @@ function MyPage() {
 export default MyPage;
 ```
 
-Metadata can be either static or dynamic:
+### Metadata can be either static or dynamic:
 
 ```tsx
 import { Metadata } from 'next';
@@ -119,4 +115,4 @@ export async function generateMetadata({ params }) {
 }
 ```
 
-Dynamic metadata allows for greater flexibility and customization. For example, you can query the page title from a database for each specific page. For further information about metadata in Next.js and to explore additional details for the metadata, you can refer to the **[official documentation](https://nextjs.org/docs/app/api-reference/functions/generate-metadata)**.
+Dynamic metadata allows for greater flexibility and customization. For example, you can query the page title from a database for each page. For further information about metadata in Next.js and to explore additional details for the metadata, refer to the **[official documentation](https://nextjs.org/docs/app/api-reference/functions/generate-metadata)**.

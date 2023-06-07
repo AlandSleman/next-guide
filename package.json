@@ -19,7 +19,7 @@
   "homepage": "https://github.com/AlandSleman/next-guide",
   "dependencies": {
     "classnames": "^2.3.2",
-    "next": "^13.0.6",
+    "next": "*",
     "nextra": "latest",
     "nextra-theme-docs": "latest",
     "prop-types": "^15.8.1",

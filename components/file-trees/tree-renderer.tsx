@@ -50,25 +50,18 @@ const FolderIcon = ({ isOpen }) =>
   );
 
 const FileIcon = ({ filename }: { filename: string }) => {
-  let extension = "";
-
-  if (filename.includes(".")) {
-    extension = filename.slice(filename.lastIndexOf(".") + 1);
-  }
-
-  switch (extension) {
-    case "jsx":
-    case "tsx":
+  switch (true) {
+    case filename.includes(".jsx"):
+    case filename.includes(".tsx"):
       return <SiReact color="#5FD3F2" />;
-    case "ts":
+    case filename.includes(".ts"):
       return <SiTypescript color="#3174C1" />;
-    case "js":
+    case filename.includes(".js"):
       return <DiJavascript color="yellow" />;
-    case "css":
+    case filename.includes(".css"):
       return <DiCss3 color="#3590CB" />;
     default:
       return null;
   }
 };
-
 

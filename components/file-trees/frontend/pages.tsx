@@ -12,12 +12,12 @@ const folder = {
               name: "[slug]",
               children: [
                 {
-                  name: "index.tsx",
+                  name: "index.tsx < /blog/...",
                 },
               ],
             },
             {
-              name: "index.tsx",
+              name: "index.tsx < /blog",
             },
           ],
         },
@@ -30,25 +30,27 @@ const folder = {
                 {
                   name: "settings",
                   children: [
-                    { name: "password.tsx" },
-                    { name: "profile.tsx" },
+                    { name: "password.tsx < /dashboard/user/settings/password" },
+                    { name: "profile.tsx < /dashboard/user/settings/profile" },
                   ],
                 },
-                { name: "analytics.tsx" },
+                { name: "analytics.tsx < /dashboard/analytics" },
                 {
-                  name: "index.tsx",
+                  name: "index.tsx < /dashboard/user",
                 },
               ],
             },
-            { name: "index.tsx" },
+            { name: "index.tsx < /dashboard" },
           ],
         },
-        { name: "about.tsx" },
+        { name: "_app.tsx < RootLayout (Optional)" },
+        { name: "about.tsx < /about" },
+        { name: "index.tsx < /" },
       ]
     },
   ],
 };
 
-let expanded = [1, 2, 6]
+let expanded = [1, 2]
 const PagesFileTree = () => <TreeRenderer defaultExpanded={expanded} folder={folder} />
 export default PagesFileTree
