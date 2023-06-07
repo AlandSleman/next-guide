@@ -11,9 +11,27 @@ Server Component is a new feature that has been introduced in React 18, and has 
 
 By default, every component you declare is considered a server component in Next.js. This means that if you try to add client-side events, such as an **`onClick`** event, to a server component, an error will occur. To resolve this issue, you need to explicitly designate the component as a client component.
 
-//code snippet
+So let’s take this counter component for example:
+
+```tsx
+import { useState } from 'react';
+ 
+export default function Counter() {
+  const [count, setCount] = useState(0);
+ 
+  return (
+    <div>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount(count + 1)}>Click me</button>
+    </div>
+  );
+}
+```
+
+We will get this error:
 
 ![Error](/frontend/error.png)
+
 
 ## Client Components
 
@@ -25,15 +43,33 @@ By default, every component you declare is considered a server component in Next
 To create a client component in Next.js, you need to create a new file and include the `"use client"` directive at the top of the file.
 This directive allows the component to behave similarly to components within the `pages` router. By following this approach, you can utilize client-side events and functionality within the component.
 
-//snippet for use client
+So we need to make the previous counter component a client component with the `"use client"` directive :
 
-## **[When to use Server and Client Components?](https://nextjs.org/docs/getting-started/react-essentials#when-to-use-server-and-client-components)**
+```tsx
+'use client';
+ 
+import { useState } from 'react';
+ 
+export default function Counter() {
+  const [count, setCount] = useState(0);
+ 
+  return (
+    <div>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount(count + 1)}>Click me</button>
+    </div>
+  );
+}
+```
+
+## When to use Server and Client Components?
 
 To simplify the decision between Server and Client Components, I recommend using Server Components (default in the `app` directory) until you have a use case for a Client Component.
 
 This table summarizes the different use cases for Server and Client Components:
 
 ![WhenToUse](/frontend/when-to-use.png)
+
 
 ---
 
