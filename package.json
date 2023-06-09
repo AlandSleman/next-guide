@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AlandSleman/next-guide.git"
+    "url": "git+https://github.com/AlandSleman/next.js-guide.git"
   },
   "author": "Aland Sleman",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/AlandSleman/next-guide/issues"
+    "url": "https://github.com/AlandSleman/next.js-guide/issues"
   },
-  "homepage": "https://github.com/AlandSleman/next-guide",
+  "homepage": "https://github.com/AlandSleman/next.js-guide",
   "dependencies": {
     "@vercel/analytics": "^1.0.1",
     "classnames": "^2.3.2",

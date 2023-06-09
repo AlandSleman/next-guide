@@ -39,12 +39,12 @@ const logo = (
 
 const config: DocsThemeConfig = {
   project: {
-    link: 'https://github.com/AlandSleman/next-guide'
+    link: 'https://github.com/AlandSleman/next.js-guide'
   },
   chat: {
     link: 'https://discord.gg/trhtNDN6cq',
   },
-  docsRepositoryBase: 'https://github.com/AlandSleman/next-guide',
+  docsRepositoryBase: 'https://github.com/AlandSleman/next.js-guide',
   logo,
   head: function useHead() {
     const { title } = useConfig()
@@ -70,8 +70,8 @@ const config: DocsThemeConfig = {
         />
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:image" content={socialCard} />
-        <meta name="twitter:site:domain" content="next-guide.kurdmake.com" />
-        <meta name="twitter:url" content="https://next-guide.kurdmake.com" />
+        <meta name="twitter:site:domain" content="next.js-guide.kurdmake.com" />
+        <meta name="twitter:url" content="https://next.js-guide.kurdmake.com" />
         <meta
           name="og:title"
           content={title ? title : 'Next.js Guide'}
