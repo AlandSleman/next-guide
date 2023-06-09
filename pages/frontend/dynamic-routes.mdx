@@ -1,0 +1,130 @@
+## Dynamic Routes
+
+When you need to create routes based on dynamic data and don't know the exact segment names in advance, Next.js provides the ability to use Dynamic Segments. These segments can be filled in at request time or prerendered at build time.
+
+### Convention
+
+To create a Dynamic Segment, wrap the name of a folder in square brackets, such as `[slug]`.
+
+Dynamic Segments are passed as the **`params`** prop to layout, page, route, and generateMetadata functions.
+
+## Dynamic Segment
+
+Let's take a blog as an example. You can define a route like **`app/blog/[id]/page.js`**, where **`[id]`** represents the Dynamic Segment for individual blog posts.
+
+```tsx
+export default async function Page({ params }: { params: { id: string } }) {
+  const res = await fetch(`https://jsonplaceholder.typicode.com/posts/${params.id}`)
+  const data = (await res.json()) as { title: string; body: string }
+
+  return (
+    <div className="col-span-full space-y-3 lg:col-span-4">
+      <h1 className="truncate text-2xl font-medium capitalize text-gray-200">
+        {data.title}
+      </h1>
+      <p className="font-medium text-gray-500 line-clamp-3">{data.body}</p>
+    </div>
+  )
+}
+```
+
+### Params
+
+The **`params`** props depend on the slug value. If your slug is `id`, here is the corresponding `params`
+
+| Route | Example URL | params |
+| --- | --- | --- |
+| app/blog/[id]/page.js | /blog/a | \{ id: 'a' } |
+| app/blog/[id]/page.js | /blog/b | \{ id: 'b' } |
+| app/blog/[id]/page.js | /blog/c | \{ id: 'c' } |
+
+## Catch-all Segments
+
+Dynamic Segments can be extended to catch all subsequent segments by adding an ellipsis inside the brackets, like **`[...folderName]`**
+
+### Params
+
+For Catch-all Segments, the **`params`** prop is of type array. Here's an example:
+
+| Route | Example URL | params |
+| --- | --- | --- |
+| app/shop/[...id]/page.js | /shop/a | \{ id: ['a'] } |
+| app/shop/[...id]/page.js | /shop/a/b | \{ id: ['a', 'b'] } |
+| app/shop/[...id]/page.js | /shop/a/b/c | \{ id: ['a', 'b', 'c'] } |
+
+## Optional Catch-all Segments
+
+Catch-all Segments can be made optional by enclosing the parameter in double square brackets, like **`[[...folderName]]`**.
+
+For example, **`app/shop/[[...id]]/page.js`** will match **`/shop`** in addition to **`/shop/clothes`**, **`/shop/clothes/tops`**, and **`/shop/clothes/tops/t-shirts`**.
+
+The difference between catch-all and optional catch-all segments is that with optional catch all segments, the route without the parameter is also matched (e.g., **`/shop`** in the example below).
+
+| Route | Example URL | params |
+| --- | --- | --- |
+| app/shop/[[...id]]/page.js | /shop | {} |
+| app/shop/[[...id]]/page.js | /shop/a | \{ id: ['a'] } |
+| app/shop/[[...id]]/page.js | /shop/a/b | \{ id: ['a', 'b'] } |
+| app/shop/[[...id]]/page.js | /shop/a/b/c | \{ id: ['a', 'b', 'c'] } |
+
+## TypeScript
+
+When using TypeScript, you can add types for `params` depending on your configured route segment.
+
+```tsx
+export default function Page({ params }: { params: { slug: string } }) {
+  return <h1>My Page</h1>
+}
+```
+
+| Route | params Type Definition |
+| --- | --- |
+| app/blog/[slug]/page.js | \{ slug: string } |
+| app/shop/[...slug]/page.js | \{ slug: string[] } |
+| app/[categoryId]/[itemId]/page.js | \{ categoryId: string, itemId: string } |
+
+> **Note**: This may be done automatically by the [TypeScript plugin](https://nextjs.org/docs/app/building-your-application/configuring/typescript#typescript-plugin) in the future.
+> 
+
+## Generating Static Params
+
+The `generateStaticParams` function can be used in combination with [dynamic route segments](https://nextjs.org/docs/app/building-your-application/routing/dynamic-routes) to **[statically generate](https://nextjs.org/docs/app/building-your-application/rendering/static-and-dynamic-rendering#static-rendering-default)** routes at build time instead of on-demand at request time.
+
+Example from [Official Next.js  repository](https://github.com/vercel/next.js/blob/8370e52a32a56e1036941fd2829eec24d234eed8/examples/with-turbopack/app/ssg/%5Bid%5D/page.tsx#L4):
+
+```tsx
+import { RenderingInfo } from '#/ui/rendering-info'
+import { notFound } from 'next/navigation'
+
+export async function generateStaticParams() {
+  // Generate two pages at build time and the rest (3-100) on-demand
+  return [{ id: '1' }, { id: '2' }]
+}
+
+export default async function Page({ params }: { params: { id: string } }) {
+  if (Number(params.id) >= 100) {
+    notFound()
+  }
+
+  const res = await fetch(
+    `https://jsonplaceholder.typicode.com/posts/${params.id}`
+  )
+  const data = (await res.json()) as { title: string; body: string }
+
+  const isOnDemand = Number(params.id) >= 3
+
+  return (
+    <div className="grid grid-cols-6 gap-x-6 gap-y-3">
+      <div className="col-span-full space-y-3 lg:col-span-4">
+        <h1 className="truncate text-2xl font-medium capitalize text-gray-200">
+          {data.title}
+        </h1>
+        <p className="font-medium text-gray-500 line-clamp-3">{data.body}</p>
+      </div>
+      <div className="-order-1 col-span-full lg:order-none lg:col-span-2">
+        <RenderingInfo type={isOnDemand ? 'ssgod' : 'ssg'} />
+      </div>
+    </div>
+  )
+}
+```

@@ -2,8 +2,8 @@
   "app-dir": "App Directory",
   "root-layout": "Root Layout",
   "server-client-components": "Server and Client components",
-  "file-conventions": "File Conventions",
   "dynamic-routes": "Dynamic Routes",
-  "next-functions": "Next functions",
-  "advanced-routing": "Advanced Routing Patterns"
+  "advanced-routing": "Advanced Routing Patterns",
+  "file-conventions": "File Conventions",
+  "next-functions": "Next functions"
 }
