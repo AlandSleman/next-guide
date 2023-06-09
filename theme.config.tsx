@@ -44,7 +44,7 @@ const config: DocsThemeConfig = {
   chat: {
     link: 'https://discord.gg/trhtNDN6cq',
   },
-  docsRepositoryBase: 'https://github.com/AlandSleman/next.js-guide',
+  docsRepositoryBase: 'https://github.com/AlandSleman/next.js-guide/tree/master',
   logo,
   head: function useHead() {
     const { title } = useConfig()
