@@ -1,4 +1,7 @@
 {
-  "fetching": "Fetching",
-  "caching-and-revalite": "Caching and Revalidating"
+  "server-acions": "Server Actions",
+  "data-fetching": "Data Fetching",
+  "caching-and-revalidating": "Caching and Revalidating",
+  "mutations": "Mutations",
+  "enhancements": "Enhancements"
 }
