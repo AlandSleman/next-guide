@@ -1,0 +1,137 @@
+## Data Fetching
+
+With the release of Next.js 13, we have two ways to fetch data: **`fetch()`** and **`server actions`**. Both approaches allow you to fetch and cache data in server components and client components. For now, we will focus on **`server actions`**.
+
+## Fetching data with server actions
+
+Fetching data with server actions is a straightforward process. To fetch data, all you need to do is create a server action and return the desired data.
+
+```tsx
+async function getData() {
+  "use server"
+  const data = // fetch data from DB
+
+  return data
+}
+
+export default async function Page() {
+  const data = await getData()
+  // ...
+  return (
+    <div>
+
+    </div>
+  );
+}
+```
+
+## Example
+
+Let's create a simple blog post example to demonstrate how to fetch data. In the next section, **[Caching and Revalidating](https://www.notion.so/Caching-and-Revalidating-revalidatePath-e983c2a0f76d423a88f1a4833a8a026a?pvs=21)**, we will continue using this example.
+
+### Static page
+
+Static pages contain fixed content that doesn't change based on user input or parameters. They are ideal for displaying information that remains the same for all visitors.
+
+```tsx
+const data = [
+  {
+    title: "Title 1",
+    body: "Lorem ipsum dolor sit amet."
+  },
+  {
+    title: "Title 2",
+    body: "Consectetur adipiscing elit, sed do eiusmod tempor incididunt."
+  },
+  {
+    title: "Title 3",
+    body: "Ut labore et dolore magna aliqua."
+  },
+  {
+    title: "Title 4",
+    body: "Sed ut perspiciatis unde omnis iste natus error."
+  },
+];
+
+async function getData() {
+  "use server"
+
+  return data
+}
+
+export default async function Page() {
+  const data = await getData()
+
+  return (
+    <div className="container mx-auto">
+      <div className="grid grid-cols-2 gap-4">
+        {data.map((item, index) => (
+          <div
+            key={index}
+            className="bg-white p-4 shadow rounded-lg"
+          >
+            <h2 className="text-lg font-bold mb-2">{item.title}</h2>
+            <p className="text-gray-700">{item.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+### Dynamic page
+
+With dynamic routes, we can retrieve data specific to each route by using dynamic segment `[id]` which is passed as the `params` prop to the page.
+
+```tsx
+import { notFound } from "next/navigation";
+
+const data = [
+  {
+    id: 1,
+    title: "Title 1",
+    body: "Lorem ipsum dolor sit amet."
+  },
+  {
+    id: 2,
+    title: "Title 2",
+    body: "Consectetur adipiscing elit, sed do eiusmod tempor incididunt."
+  },
+  {
+    id: 3,
+    title: "Title 3",
+    body: "Ut labore et dolore magna aliqua."
+  },
+  {
+    id: 4,
+    title: "Title 4",
+    body: "Sed ut perspiciatis unde omnis iste natus error."
+  },
+];
+
+async function getData(id: string) {
+  const postId = parseInt(id) || 0;
+  const post = data.find(item => item.id === postId);
+
+  if (post) return post
+  else return null
+}
+
+export default async function Page({ params }: { params: { id: string } }) {
+  const data = await getData(params.id);
+  // If a blog post is not found we render a 404 page
+  if (!data) notFound()
+
+  return (
+    <div className="container mx-auto">
+      <div
+        className="bg-white p-4 shadow rounded-lg"
+      >
+        <h2 className="text-lg font-bold mb-2">{data.title}</h2>
+        <p className="text-gray-700">{data.body}</p>
+      </div>
+    </div >
+  );
+}
+```

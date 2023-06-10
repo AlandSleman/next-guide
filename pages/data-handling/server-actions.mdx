@@ -1,0 +1,114 @@
+## Server Actions
+
+In Next.js, you can use Server Actions to fetch and mutate data on the server side without the need for an API route Next.js will do that under the hood for you.
+Server Actions are built on top of React Actions and provide a convenient way to fetch data and perform server-side mutations, reduce client-side JavaScript, and enhance forms progressively.
+
+### Convention
+
+To enable Server Actions in your Next.js project, you need to set the **`serverActions`** flag in your **`next.config.js`** file:
+
+```
+module.exports = {
+  experimental: {
+    serverActions: true,
+  },
+}
+```
+
+## **Creating Server Actions**
+
+You can define Server Actions in two ways:
+
+- Inside a server component.
+- In a separate file (for Client and Server components), for re-usability. You can also define multiple Server Actions in a single file.
+
+### With Server Components
+
+To create a Server Action within a Server Component, define an asynchronous function with the **`'use server'`** directive at the top of the function body.
+
+```tsx
+export default function ServerComponent() {
+  async function myAction() {
+    'use server'
+    // ...
+  }
+}
+```
+
+### With Client Components
+
+If you want to use a Server Action inside a Client Component, create the action in a separate file with the **`'use server'`** directive at the top of the file. Then, import the Server Action into your Client Component.
+
+```
+// app/actions.js
+
+'use server'
+
+export async function myAction() {
+  // ...
+}
+
+// app/client-component.jsx
+
+'use client'
+
+import { myAction } from './actions';
+
+export default function ClientComponent() {
+  return (
+    <form action={myAction}>
+      <button type="submit">Add to Cart</button>
+    </form>
+  );
+}
+```
+
+## Invoking Server Actions in Client components
+
+Let's briefly gloss over a quick preview of how you can invoke server actions in client components using the following methods. We'll cover the details of data mutations with server actions in **[mutations](https://www.notion.so/Mutations-27302d3dbaa74ba4a476893c3fadd3ee?pvs=21)**.
+
+### Using the `action` prop
+
+React's **`action`** prop allows you to invoke a Server Action on a **`<form>`** element. Here's an example:
+
+```tsx
+export default function AddToCart({ productId }) {
+  async function addItem(data) {
+    'use server'
+		// ...
+  }
+ 
+  return (
+    <form action={addItem}>
+      <button type="submit">Add to Cart</button>
+    </form>
+  )
+}
+```
+
+When the form is submitted, the Server Action specified in the **`action`** prop will be triggered.
+
+When the specified element is interacted with (e.g., clicked), the associated Server Action (**`myAction`** in this case) will be invoked.
+
+### Custom Invocation with `startTransition`
+
+If you prefer to invoke Server Actions without relying on the **`action`** or **`formAction`** props, you can use **`startTransition`** to trigger the action explicitly. This method allows you to disable Progressive Enhancement. Here's an example:
+
+```tsx
+'use client'
+ 
+import { useTransition } from 'react'
+import { addItem } from '../actions'
+ 
+function ExampleClientComponent({ id }: { id: string }) {
+  let [isPending, startTransition] = useTransition()
+ 
+  return (
+    <button onClick={() => startTransition(() => addItem(id))}>
+      Add To Cart
+    </button>
+  )
+}
+```
+
+In this approach, when the button is clicked, the **`startTransition`** function is called, which wraps the invocation of the Server Action (**`myAction`** in this case) and any additional logic or state updates you may want to perform.
