@@ -36,7 +36,6 @@ const logo = (
     `}</style>
   </span>
 )
-
 const config: DocsThemeConfig = {
   project: {
     link: 'https://github.com/AlandSleman/next.js-guide'
