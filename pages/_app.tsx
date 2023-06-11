@@ -6,7 +6,7 @@ import { Analytics } from '@vercel/analytics/react';
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
-      <PlausibleProvider domain="kurdmake.com">
+      <PlausibleProvider domain="next-guide.kurdmake.com">
         <Component {...pageProps} />
         <Analytics />
       </PlausibleProvider >
