@@ -1,0 +1,8 @@
+## Introduction
+
+With the introduction of Next.js 13, there are now two ways to fetch data: using the **`fetch()`** function `server actions`. Both approaches allow you to fetch data in both server and client components. Let's briefly discuss each approach:
+
+1. Server Actions: Server actions are easier to use since you don't need to create API routes explicitly. Instead, you can define a function that runs on the server and fetches the required data. This simplifies the process by eliminating the need for separate API routes. Server actions are convenient for basic data fetching scenarios.
+2. Fetch: The **`fetch()`** function provides more flexibility and allows you to build advanced applications. With this approach, you create API routes explicitly and handle data fetching separately. This additional overhead compared to server actions offers more control and customization options. Fetch is suitable for complex applications that require fine-grained control over the data fetching process.
+
+It's important to note that when using server actions, you cannot share the API route since you're not creating one explicitly. On the other hand, when using the fetch approach, you create an API route, making it easier to share and integrate with other parts of your application. Ultimately, choosing between server actions and fetch depends on your specific use case and the trade-offs you are willing to make.

@@ -1,0 +1,81 @@
+In addition to caching fetch requests, we can use React **`cache()`** function, which provides further caching capabilities. This function allows you to cache and deduplicate requests by memoizing the results of function calls.
+
+When the same function is called with the same arguments, the cached value is reused instead of re-executing the function. This enhances efficiency and reduces redundant requests.
+
+- 
+    
+    utils/getUser.ts
+    
+    TypeScript
+    
+    ```
+    import { cache } from 'react' export const getUser = cache(async (id: string) => {  const user = await db.user.findUnique({ id })  return user})
+    ```
+    
+    app/user/[id]/layout.tsx
+    
+    TypeScript
+    
+    ```
+    import { getUser } from '@utils/getUser' export default async function UserLayout({ params: { id } }) {  const user = await getUser(id)  // ...}
+    ```
+    
+    app/user/[id]/page.tsx
+    
+    TypeScript
+    
+    ```
+    import { getUser } from '@utils/getUser' export default async function Page({  params: { id },}: {  params: { id: string }}) {  const user = await getUser(id)  // ...}
+    ```
+    
+
+Although the `getUser()` function is called twice in the example above, only one query will be made to the database. This is because `getUser()` is wrapped in `cache()`, so the second request can reuse the result from the first request.
+
+### Good to know:
+
+- `fetch()` caches requests automatically, so you don't need to wrap functions that use `fetch()` with `cache()`. See [automatic request deduping](https://nextjs.org/docs/app/building-your-application/data-fetching#automatic-fetch-request-deduping) for more information.
+- In this new model, we recommend **fetching data directly in the component that needs it**, even if you're requesting the same data in multiple components, rather than passing the data between components as props.
+- We recommend using the `[server-only` package](https://nextjs.org/docs/getting-started/react-essentials#keeping-server-only-code-out-of-client-components-poisoning) to make sure server data fetching functions are never used on the client.
+
+## Preload Pattern with cache()
+
+To optimize data fetching, Next.js recommends implementing the preload pattern in utility functions or components responsible for fetching data. By utilizing the **`preload()`** function, you can proactively initiate data fetching for anticipated data needs. This approach helps enhance performance by fetching data in advance, reducing the potential latency experienced when the data is actually required.
+
+```tsx
+components/User.tsx
+
+TypeScript
+
+import { getUser } from '@utils/getUser'
+ 
+export const preload = (id: string) => {
+  // void evaluates the given expression and returns undefined
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/void
+  void getUser(id)
+}
+export default async function User({ id }: { id: string }) {
+  const result = await getUser(id)
+  // ...
+}
+By calling preload, you can eagerly start fetching data you're likely going to need.
+
+app/user/[id]/page.tsx
+
+TypeScript
+
+import User, { preload } from '@components/User'
+ 
+export default async function Page({
+  params: { id },
+}: {
+  params: { id: string }
+}) {
+  preload(id) // starting loading the user data now
+  const condition = await fetchCondition()
+  return condition ? <User id={id} /> : null
+}
+```
+
+## Combining Cache, Preload, and Server-only
+
+We can combine the **`cache()`** function, the preload pattern, and the server-only package to create a robust data fetching utility. This combination allows you to eagerly fetch data, cache responses for efficient reuse, and ensure that data fetching operations are exclusively performed on the server side.

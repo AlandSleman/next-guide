@@ -1,0 +1,36 @@
+### **[Experimental `useOptimistic`](https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions#experimental-useoptimistic)**
+
+The experimental `useOptimistic` hook provides a way to implement optimistic updates in your application. Optimistic updates are a technique that enhances user experience by making the app appear more responsive.
+
+When a Server Action is invoked, the UI is updated immediately to reflect the expected outcome, instead of waiting for the Server Action's response.
+
+```
+'use client' import { experimental_useOptimistic as useOptimistic } from 'react'import { send } from './actions.js' export function Thread({ messages }) {  const [optimisticMessages, addOptimisticMessage] = useOptimistic(    messages,    (state, newMessage) => [...state, { message: newMessage, sending: true }]  )  const formRef = useRef()   return (    <div>      {optimisticMessages.map((m) => (        <div>          {m.message}          {m.sending ? 'Sending...' : ''}        </div>      ))}      <form        action={async (formData) => {          const message = formData.get('message')          formRef.current.reset()          addOptimisticMessage(message)          await send(message)        }}        ref={formRef}      >        <input type="text" name="message" />      </form>    </div>  )}
+```
+
+### **[Experimental `useFormStatus`](https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions#experimental-useformstatus)**
+
+The **experimental** `useFormStatus` hook can be used within Form Actions, and provides the `pending` property.
+
+app/form.js
+
+```
+'use client' import { experimental_useFormStatus as useFormStatus } from 'react-dom' function Submit() {  const { pending } = useFormStatus()   return (    <input      type="submit"      className={pending ? 'button-pending' : 'button-normal'}      disabled={pending}    >      Submit    </input>  )}
+```
+
+### **[Progressive Enhancement](https://nextjs.org/docs/app/building-your-application/data-fetching/server-actions#progressive-enhancement)**
+
+Progressive Enhancement allows a `<form>` to function properly without JavaScript, or with JavaScript disabled. This allows users to interact with the form and submit data even if the JavaScript for the form hasn't been loaded yet or if it fails to load.
+
+Both Server Form Actions and Client Form Actions support Progressive Enhancement, using one of two strategies:
+
+- If a **Server Action** is passed directly to a `<form>`, the form is interactive **even if JavaScript is disabled**.
+- If a **Client Action** is passed to a `<form>`, the form is still interactive, but the action will be placed in a queue until the form has hydrated. The `<form>` is prioritized with Selective Hydration, so it happens quickly.
+
+app/components/example-client-component.js
+
+```
+'use client' import { useState } from 'react'import { handleSubmit } from './actions.js' export default function ExampleClientComponent({ myAction }) {  const [input, setInput] = useState()   return (    <form action={handleSubmit} onChange={(e) => setInput(e.target.value)}>      {/* ... */}    </form>  )}
+```
+
+In both cases, the form is interactive before hydration occurs. Although Server Actions have the additional benefit of not relying on client JavaScript, you can still compose additional behavior with Client Actions where desired without sacrificing interactivity.

@@ -1,0 +1,34 @@
+## loading.tsx
+
+we brifly covered `loading.tsx` file which is The special file `loading.js` helps you create meaningful Loading UI with [React Suspense](https://react.dev/reference/react/Suspense). With this convention, you can show an [instant loading state](https://nextjs.org/docs/app/building-your-application/routing/loading-ui-and-streaming#instant-loading-states) from the server while the content of a route segment loads, the new content is automatically swapped in once rendering is complete.
+
+## Suspense
+
+In addition to `loading.js`, you can also manually create Suspense Boundaries for your own UI components. The App Router supports streaming with [Suspense](https://react.dev/reference/react/Suspense) for both [Node.js and Edge runtimes](https://nextjs.org/docs/app/building-your-application/rendering/edge-and-nodejs-runtimes).
+
+Streaming with Suspense allows you to improve the loading performance of your Next.js applications by progressively rendering HTML from the server to the client. With Suspense, you can manually create Suspense Boundaries for your own UI components.
+
+Streaming works by breaking down the page's HTML into smaller chunks and sending them from the server to the client progressively. This enables parts of the page to be displayed sooner, without waiting for all the data to load before any UI can be rendered.
+
+```tsx
+import { Suspense } from 'react';
+import { PostFeed, Weather } from './Components';
+
+export default function Posts() {
+  return (
+    <section>
+      <Suspense fallback={<p>Loading feed...</p>}>
+        <PostFeed />
+      </Suspense>
+      <Suspense fallback={<p>Loading weather...</p>}>
+        <Weather />
+      </Suspense>
+    </section>
+  );
+}
+```
+
+In this example, we have a **`Posts`** component that renders a **`PostFeed`** component and a **`Weather`** component. By wrapping these components with **`<Suspense>`**, we can handle their asynchronous actions (e.g., fetching data) and display fallback UI (e.g., loading indicators) while the actions are in progress. Once the actions complete, the actual components will be swapped in.
+
+I recommend reading more about suspense how suspense works by reading [the docs:](https://nextjs.org/docs/app/building-your-application/routing/loading-ui-and-streaming)
+

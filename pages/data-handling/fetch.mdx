@@ -1,0 +1,75 @@
+Next.js extends the native [Web **`fetch()`** API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) by introducing additional features that enable you to define persistent caching semantics for each request made on the server. This means that you can customize and control the caching behavior of individual requests, providing more flexibility in how your server handles and caches data.
+
+To configure the caching behavior for each request, you need to provide a second parameter, which is an object, to customize the caching settings of the fetch request. This object allows you to specify various caching options and parameters to control how the request is cached and handled.
+
+```tsx
+export default async function Page() {
+  // This request should be cached until manually invalidated.
+  // Similar to `getStaticProps`.
+  // `force-cache` is the default and can be omitted.
+  const staticData = await fetch(`https://...`, { cache: 'force-cache' });
+ 
+  // This request should be refetched on every request.
+  // Similar to `getServerSideProps`.
+  const dynamicData = await fetch(`https://...`, { cache: 'no-store' });
+ 
+  // This request should be cached with a lifetime of 10 seconds.
+  // Similar to `getStaticProps` with the `revalidate` option.
+  const revalidatedData = await fetch(`https://...`, {
+    next: { revalidate: 10 },
+  });
+ 
+  return <div>...</div>;
+}
+```
+
+## fetch(url, options)
+
+Since Next.js extends the [Web `fetch()` API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API), you can use any of the [native options available](https://developer.mozilla.org/en-US/docs/Web/API/fetch#parameters).
+
+Further, Next.js polyfills `fetch` on both the client and the server, so you can use fetch in both [Server and Client Components](https://nextjs.org/docs/getting-started/react-essentials).
+
+## Caching
+
+By default, `fetch` will automatically fetch and [cache data](https://nextjs.org/docs/app/building-your-application/data-fetching/caching) indefinitely.
+
+### options.cache
+
+Configure how the request should interact with Next.js HTTP cache.
+
+`fetch(`https://...`, { cache: 'force-cache' | 'no-store' });`
+
+- **`force-cache`** (default) - Next.js looks for a matching request in its HTTP cache.
+    - If there is a match and it is fresh, it will be returned from the cache.
+    - If there is no match or a stale match, Next.js will fetch the resource from the remote server and update the cache with the downloaded resource.
+- **`no-store`** - Next.js fetches the resource from the remote server on every request without looking in the cache, and it will not update the cache with the downloaded resource.
+
+> Good to know:
+> 
+> - If you don't provide a `cache` option, Next.js will default to `force-cache`, unless a [dynamic function](https://nextjs.org/docs/app/building-your-application/rendering/static-and-dynamic-rendering#dynamic-functions) such as `cookies()` is used, in which case it will default to `no-store`.
+> - The `no-cache` option behaves the same way as `no-store` in Next.js.
+
+Next.js extends the native [Web `fetch()` API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) to allow each request on the server to set its own persistent caching semantics.
+
+### Per-request Caching
+
+By default, all `fetch()` requests are cached and deduplicated automatically. This means that if you make the same request twice, the second request will reuse the result from the first request.
+
+Requests are **not** cached if:
+
+- Dynamic methods (`next/headers`, `export const POST`, or similar) are used and the fetch is a `POST` request (or uses `Authorization` or `cookie` headers)
+- `fetchCache` is configured to skip cache by default
+- `revalidate: 0` or `cache: 'no-store'` is configured on individual `fetch`
+
+### Revalidate
+
+To revalidate [cached data](https://nextjs.org/docs/app/building-your-application/data-fetching/caching) at a timed interval, you can use the `next.revalidate` option in `fetch()` to set the `cache` lifetime of a resource (in seconds).
+
+```tsx
+export default async function Page() {
+  // revalidate this data every 10 seconds at most
+  const res = await fetch('https://...', { next: { revalidate: 10 } })
+  const data = res.json()
+  // ...
+}
+```

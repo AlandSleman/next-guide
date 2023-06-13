@@ -1,0 +1,19 @@
+We can have on-demand revalidation on a route based on its path with revalidatePath().
+`revalidatePath` allows you to revalidate data associated with a specific path. This is useful for scenarios where you want to update your cached data without waiting for a revalidation period to expire.
+
+```tsx
+import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
+ 
+export async function GET(request: NextRequest) {
+  const path = request.nextUrl.searchParams.get('path') || '/'
+  revalidatePath(path)
+  return NextResponse.json({ revalidated: true, now: Date.now() })
+}
+```
+
+> Good to know:
+> 
+> - `revalidatePath` is available in both [Node.js and Edge runtimes](https://nextjs.org/docs/pages/building-your-application/rendering/edge-and-nodejs-runtimes).
+> - `revalidatePath` will revalidate *all segments* under a dynamic route segment. For example, if you have a dynamic segment `/product/[id]` and you call `revalidatePath('/product/[id]')`, then all segments under `/product/[id]` will be revalidated as requested.
+> - `revalidatePath` only invalidates the cache when the path is next visited. This means calling `revalidatePath` with a dynamic route segment will not immediately trigger many revalidations at once. The invalidation only happens when the path is next visited.
